@@ -1,8 +1,5 @@
-import { getOfferFromPaybis } from "./providers";
+import { getAllOffers } from "./providers.js";
 
-export default async function offer(params: any, context: any) {
-  const btc = await getOfferFromPaybis(100);
-  return {
-    message: btc,
-  };
+export default async function offers(amount: any, context: any) {
+  return getAllOffers(amount);
 }

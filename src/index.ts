@@ -1,12 +1,13 @@
 import express from "express";
-import offer from "./offers"; // Ensure this file exports correctly
+import offers from "./offers.js"; // Ensure this file exports correctly
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.get("/", async (req, res) => {
+app.get("/offers", async (req, res) => {
   try {
-    const data = await offer(0, 0); // Await the offer function
+    const { amount } = req.query;
+    const data = await offers(amount, 0); // Await the offer function
     return res.json(data); // Send a JSON response
   } catch (error) {
     console.error(error);

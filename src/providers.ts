@@ -1,8 +1,6 @@
 import axios from "axios";
 
-export async function getOfferFromPaybis(
-  amount: number
-): Promise<string | void> {
+async function getOfferFromPaybis(amount: number): Promise<string | void> {
   try {
     const res = await axios.post(
       "https://api.paybis.com/public/processing/v2/quote/buy-crypto",
@@ -23,9 +21,7 @@ export async function getOfferFromPaybis(
   }
 }
 
-export async function getOfferFromGuardarian(
-  amount: number
-): Promise<string | void> {
+async function getOfferFromGuardarian(amount: number): Promise<string | void> {
   try {
     const response = await axios.get(
       `https://api-payments.guardarian.com/v1/estimate?from_amount=${amount}&from_currency=USD&to_currency=BTC&platform=web&from_network=USD&to_network=BTC`,
@@ -42,30 +38,39 @@ export async function getOfferFromGuardarian(
   }
 }
 
-export async function getOfferFromMoonpay(
-  amount: number
-): Promise<string | void> {
+async function getOfferFromMoonpay(amount: number): Promise<string | void> {
   try {
     const response = await axios.get(
       `https://api.moonpay.com/v3/currencies/btc/buy_quote?apiKey=pk_live_R5Lf25uBfNZyKwccAZpzcxuL3ZdJ3Hc&baseCurrencyAmount=${amount}&baseCurrencyCode=usd&fixed=true&areFeesIncluded=true&quoteType=principal`
     );
-    return response?.data?.quoteCurrencyAmount;
+    return response?.data?.quoteCurrencyAmount.toString();
   } catch (err) {
     console.log(err);
     return;
   }
 }
 
-export async function getOfferFromTransak(
-  amount: number
-): Promise<string | void> {
+async function getOfferFromTransak(amount: number): Promise<string | void> {
   try {
     const response = await axios.get(
       `https://api.transak.com/api/v1/pricing/public/widget/quotes?fiatCurrency=USD&cryptoCurrency=BTC&paymentMethod=credit_debit_card&isBuyOrSell=BUY&fiatAmount=${amount}&partnerApiKey=02624956-010b-4775-8e31-7b9c8b82df76&network=mainnet&quoteCountryCode=IN`
     );
-    return response?.data?.response?.cryptoAmount;
+    return response?.data?.response?.cryptoAmount.toString();
   } catch (err) {
     console.log(err);
     return;
   }
+}
+type Results = { [key: string]: string | null };
+export async function getAllOffers(amount: number): Promise<Results> {
+  const paybis = await getOfferFromPaybis(amount);
+  const guardarian = await getOfferFromGuardarian(amount);
+  const moonpay = await getOfferFromMoonpay(amount);
+  const transak = await getOfferFromTransak(amount);
+  return {
+    paybis: paybis || null,
+    guardarian: guardarian || null,
+    moonpay: moonpay || null,
+    transak: transak || null,
+  };
 }
