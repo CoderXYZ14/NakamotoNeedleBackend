@@ -63,10 +63,13 @@ async function getOfferFromTransak(amount: number): Promise<string | void> {
 }
 type Results = { [key: string]: string | null };
 export async function getAllOffers(amount: number): Promise<Results> {
-  const paybis = await getOfferFromPaybis(amount);
-  const guardarian = await getOfferFromGuardarian(amount);
-  const moonpay = await getOfferFromMoonpay(amount);
-  const transak = await getOfferFromTransak(amount);
+  const [paybis, guardarian, moonpay, transak] = await Promise.all([
+    getOfferFromPaybis(amount),
+    getOfferFromGuardarian(amount),
+    getOfferFromMoonpay(amount),
+    getOfferFromTransak(amount),
+  ]);
+
   return {
     paybis: paybis || null,
     guardarian: guardarian || null,
