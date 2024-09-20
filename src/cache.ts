@@ -1,20 +1,21 @@
 import { getAllOffers } from "./providers.js";
-
 async function cache() {
-  // Fetch offers from all providers
-  const offers = await getAllOffers(100);
+  try {
+    const offers = await getAllOffers(100);
+    console.log("Offers fetched:", offers);
 
-  // Process the offers into a structured format
-  const offersData = Object.keys(offers).map((provider) => {
-    const btcValue = offers[provider];
-    return {
-      provider,
-      btc: btcValue !== null ? Number(btcValue) : 0, // Default to 0 if null
-    };
-  });
+    const offersData = Object.keys(offers).map((provider) => {
+      const btcValue = offers[provider];
+      return {
+        provider,
+        btc: btcValue !== null ? String(btcValue) : "0",
+      };
+    });
 
-  // Return the array of offersData
-  return offersData;
+    return offersData;
+  } catch (error) {
+    console.error("Error fetching or processing offers:", error);
+    throw error; // Ensure errors are propagated
+  }
 }
-
 export default cache;
